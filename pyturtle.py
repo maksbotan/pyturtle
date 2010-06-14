@@ -1,5 +1,5 @@
 #!/usr/bin/env python
 
-import pyturtle.Main
+from pyturtle.main import Main
 
-main = pyturtle.Main('gtk')
+interpreter = Main('GTK')

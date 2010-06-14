@@ -20,7 +20,12 @@ class Main:
         
         returns 
         """
-        return None # should raise NotImplementedError()
+        
+        wndmod = __import__('pyturtle.MainWindow'+gui,fromlist=['MainWindow'+gui])
+        wnd = wndmod.MainWindow()
+
+        wnd.run()
+        
 
 
 class Turtle:
