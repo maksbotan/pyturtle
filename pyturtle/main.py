@@ -1,3 +1,27 @@
+from misc import ParseErrorException
+
+class Main:
+    """Class Main
+    """
+    # Attributes:
+    new_drawline_task = None  # (Signal) 
+    new_fill_task = None  # (Signal) 
+    new_bg_task = None  # (Signal) 
+    new_reset_task = None  # (Signal) 
+    new_parsefailed = None  # (Signal) 
+    new_drawturtle_task = None  # (Signal) 
+    __turtle = None  # (Turtle) 
+    
+    # Operations
+    def __init__(self, gui):
+        """function __init__
+        
+        gui: string
+        
+        returns 
+        """
+        return None # should raise NotImplementedError()
+
 
 class Turtle:
     """Class Turtle
@@ -91,4 +115,24 @@ class Turtle:
         """
         return None # should raise NotImplementedError()
     
-
+class TurtleParser:
+    """Class TurtleParser
+    """
+    # Attributes:
+    
+    # Operations
+    def __init__(self):
+        """function __init__
+        
+        returns 
+        """
+        return None # should raise NotImplementedError()
+    
+    def parse_command(self, cmd):
+        """function parse_command
+        
+        cmd: string
+        
+        returns list
+        """
+        return None # should raise NotImplementedError()
