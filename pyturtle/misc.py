@@ -15,6 +15,5 @@ class ParseErrorException:
         
         returns 
         """
-        return None # should raise NotImplementedError()
-    
-
+        self.command = command
+        self.type = type

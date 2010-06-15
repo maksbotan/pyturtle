@@ -1,131 +1,99 @@
 from misc import ParseErrorException
+import threading
+from notify.signal import Signal
 
 class Main:
-    """Class Main
-    """
-    # Attributes:
-    new_drawline_task = None  # (Signal) 
-    new_fill_task = None  # (Signal) 
-    new_bg_task = None  # (Signal) 
-    new_reset_task = None  # (Signal) 
-    new_parsefailed = None  # (Signal) 
-    new_drawturtle_task = None  # (Signal) 
-    __turtle = None  # (Turtle) 
-    
-    # Operations
-    def __init__(self, gui):
-        """function __init__
-        
-        gui: string
-        
-        returns 
-        """
-        
-        wndmod = __import__('pyturtle.MainWindow'+gui,fromlist=['MainWindow'+gui])
-        wnd = wndmod.MainWindow()
 
-        wnd.run()
+    def __init__(self, gui):
         
+        self.new_drawline_task = Signal()
+        self.new_fill_task = Signal()
+        self.new_bg_task = Signal()
+        self.new_reset_task = Signal()
+        self.new_parsefailed = Signal()
+        self.new_parsesuccess = Signal()
+        self.new_drawturtle_task = Signal()
+
+        self.__turtle = Turtle()
+        self.__parser = TurtleParser()
+
+        wndmod = __import__('pyturtle.MainWindow'+gui,fromlist=['MainWindow'+gui])
+        self.wnd = wndmod.MainWindow({
+            'drawline': self.new_drawline_task,
+            'fill': self.new_fill_task,
+            'bg': self.new_bg_task,
+            'reset': self.new_reset_task,
+            'parsefailed': self.new_parsefailed,
+            'parsesuccess': self.new_parsesuccess,
+            'drawturtle': self.new_drawturtle_task,
+        })
+
+        self.wnd.new_command.connect(self.dispatch_command)
+
+        self.gui_thread = threading.Thread(target=self.wnd.run)
+        self.gui_thread.start()
+
+    def dispatch_command(self,command):
+        try:
+            cmd = self.__parser.parse_command(command)
+        except ParseErrorException as e:
+            self.new_parsefailed(e.command,e.type)
+            return
+        self.new_parsesuccess()
 
 
 class Turtle:
     """Class Turtle
     """
     # Attributes:
-    __colors = {'0':[0,0,0]}  # (dict of RGB lists) 
+    __colors = {
+        '0':[0,0,0],
+        '1':[0,0,255],
+        '2':[0,255,0],
+        '3':[0,255,255],
+        '4':[255,0,0],
+        '5':[255,0,255],
+        '6':[255,205,0],
+        '7':[255,255,255],
+        '8':[150,75,0],
+        '9':[210,180,140],
+        #'10': forest?! That weird! Lets find it out later.
+        }  # (dict of RGB lists) 
     __position = (0,0)  # (tuple of coordinates) 
     
     # Operations
     def __init__(self):
-        """function __init__
-        
-        returns 
-        """
         return None # should raise NotImplementedError()
     
     def exec_command(self, command):
-        """function exec_command
-        
-        command: list
-        
-        returns 
-        """
         return None # should raise NotImplementedError()
     
     def __convert_color(self, color):
-        """function convert_color
-        
-        color: 
-        
-        returns RGB list
-        """
         return None # should raise NotImplementedError()
     
     def __fw(self, steps):
-        """function fw
-        
-        steps: 
-        
-        returns 
-        """
         return None # should raise NotImplementedError()
     
     def __bw(self, steps):
-        """function bw
-        
-        steps: 
-        
-        returns 
-        """
         return None # should raise NotImplementedError()
     
     def __rt(self, angle):
-        """function rt
-        
-        angle: 
-        
-        returns 
-        """
         return None # should raise NotImplementedError()
     
     def __lt(self, angle):
-        """function lt
-        
-        angle: 
-        
-        returns 
-        """
         return None # should raise NotImplementedError()
     
     def __pen_up(self):
-        """function pen_up
-        
-        returns 
-        """
         return None # should raise NotImplementedError()
     
     def __pen_down(self):
-        """function pen_down
-        
-        returns 
-        """
         return None # should raise NotImplementedError()
     
     def __goto(self, place):
-        """function goto
-        
-        place: tuple of coordinates
-        
-        returns 
-        """
         return None # should raise NotImplementedError()
     
 class TurtleParser:
-    """Class TurtleParser
-    """
-    # Attributes:
-    
-    # Operations
+
     def __init__(self):
         """function __init__
         
@@ -134,10 +102,4 @@ class TurtleParser:
         return None # should raise NotImplementedError()
     
     def parse_command(self, cmd):
-        """function parse_command
-        
-        cmd: string
-        
-        returns list
-        """
-        return None # should raise NotImplementedError()
+        raise ParseErrorException(cmd,'Not implemented yet')
