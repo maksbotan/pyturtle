@@ -14,11 +14,7 @@ class Main:
         self.new_parsesuccess = Signal()
         self.new_drawturtle_task = Signal()
 
-        self.__turtle = Turtle()
-        self.__parser = TurtleParser()
-
-        wndmod = __import__('pyturtle.MainWindow'+gui,fromlist=['MainWindow'+gui])
-        self.wnd = wndmod.MainWindow({
+        self.signals = {
             'drawline': self.new_drawline_task,
             'fill': self.new_fill_task,
             'bg': self.new_bg_task,
@@ -26,7 +22,13 @@ class Main:
             'parsefailed': self.new_parsefailed,
             'parsesuccess': self.new_parsesuccess,
             'drawturtle': self.new_drawturtle_task,
-        })
+        }
+
+        self.__turtle = Turtle(self.signals)
+        self.__parser = TurtleParser()
+
+        wndmod = __import__('pyturtle.MainWindow'+gui,fromlist=['MainWindow'+gui])
+        self.wnd = wndmod.MainWindow(self.signals)
 
         self.wnd.new_command.connect(self.dispatch_command)
 
@@ -60,16 +62,24 @@ class Turtle:
         #'10': forest?! That weird! Lets find it out later.
         }  # (dict of RGB lists) 
     __position = (0,0)  # (tuple of coordinates) 
-    
+    __angle = 0
+
+    __pen_states = {
+        'up': True,
+        'down': False,
+    }
+
+    __pen_state = __pen_states['up']
+
     # Operations
-    def __init__(self):
-        return None # should raise NotImplementedError()
+    def __init__(self,signals):
+        self.signals = signals
     
     def exec_command(self, command):
         return None # should raise NotImplementedError()
     
     def __convert_color(self, color):
-        return None # should raise NotImplementedError()
+        return __colors[color]
     
     def __fw(self, steps):
         return None # should raise NotImplementedError()
@@ -78,19 +88,22 @@ class Turtle:
         return None # should raise NotImplementedError()
     
     def __rt(self, angle):
-        return None # should raise NotImplementedError()
-    
+        self.angle += angle
+        self.signals['drawturtle'](self.__position, self.__angle)
+   
     def __lt(self, angle):
-        return None # should raise NotImplementedError()
-    
+        self.angle -= angle
+        self.signals['drawturtle'](self.__position, self.__angle)
+
     def __pen_up(self):
-        return None # should raise NotImplementedError()
+        self.__pen_state = self.__pen_states['up']
     
     def __pen_down(self):
-        return None # should raise NotImplementedError()
+        self.__pen_state = self.__pen_states['down']
     
     def __goto(self, place):
-        return None # should raise NotImplementedError()
+        self.__position = place
+        self.signals['drawturtle'](self.__position, self.__angle)
     
 class TurtleParser:
 

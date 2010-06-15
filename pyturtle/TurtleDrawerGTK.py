@@ -14,7 +14,7 @@ class TurtleDrawerGTK:
         """
         return None # should raise NotImplementedError()
     
-    def draw_line(self, start, end, Color = [255,255,255]):
+    def draw_line(self, start, end, color = [255,255,255]):
         """function draw_line
         
         start: tuple
@@ -43,7 +43,7 @@ class TurtleDrawerGTK:
         """
         return None # should raise NotImplementedError()
     
-    def draw_turtle(self, place):
+    def draw_turtle(self, place, angle):
         """function draw_turtle
         
         place: tuple
