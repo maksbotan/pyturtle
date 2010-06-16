@@ -146,12 +146,7 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkDrawingArea" id="screen">
-            <property name="visible">True</property>
-          </widget>
-          <packing>
-            <property name="position">1</property>
-          </packing>
+          <placeholder/>
         </child>
         <child>
           <widget class="GtkTextView" id="commands">

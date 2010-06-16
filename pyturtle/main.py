@@ -1,3 +1,8 @@
+"""
+main.py: Main, Turtle and TurtleParser classes
+This file defines classes that are core of Logo interpreter
+"""
+
 from misc import ParseErrorException
 import threading
 from notify.signal import Signal
@@ -82,10 +87,18 @@ class Turtle:
         return __colors[color]
     
     def __fw(self, steps):
-        return None # should raise NotImplementedError()
+        new_pos = \
+            (self.__position[0] + steps * sin(self.__angle),
+            self.__position[1] + steps * cos(self.__angle))
+        self.signals['drawline'](self.__position, new_pos)
+        self.__position = new_pos
     
     def __bw(self, steps):
-        return None # should raise NotImplementedError()
+        new_pos = \
+            (self.__position[0] - steps * sin(self.__angle),
+            self.__position[1] - steps * cos(self.__angle))
+        self.signals['drawline'](self.__position, new_pos)
+        self.__position = new_pos
     
     def __rt(self, angle):
         self.angle += angle

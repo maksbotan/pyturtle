@@ -1,3 +1,7 @@
+"""
+MainWindowGTK.py: GUI for pyturte Logo intrepreter in GTK
+"""
+
 from TurtleDrawerGTK import TurtleDrawerGTK
 
 import gtk
@@ -6,35 +10,44 @@ import gtk.glade
 from notify.all import Signal
 
 class MainWindow:
-    """Class MainWindow
+
     """
-    # Attributes:
-    new_command = None  # (Signal) 
-    screen = None  # (Gdk.Drawable) 
-    __drawer = None  # (TurtleDrawerGTK) 
+    MainWindow class imported by pyturtle.main
+    Contains functions ("slots") called by interpreter
+    """
     
-    # Operations
+    
     def __init__(self,signals):
-        self.widgets = gtk.glade.XML('pyturtle/mainwindow.glade') 
+        
+        """Constructor for MainWindow class
+
+        Argumets:
+
+        signals -- Dictionary with all signals defined by Main
+        """
+
+        self.widgets = gtk.glade.XML('pyturtle/mainwindow.glade') #Load widgets from Glade-3 file 
+        #Dictionary of signals defined in Glade file
         signals_dict = {
             'on_commandline_key_press_event': self.commandline_key_press,
         }
 
-        self.widgets.signal_autoconnect(signals_dict)
+        self.widgets.signal_autoconnect(signals_dict) #Connect GUI signals with handlers in this class
 
-        self.wnd = self.widgets.get_widget('main_window')
-        self.wnd.connect('destroy',gtk.main_quit)
+        self.wnd = self.widgets.get_widget('main_window') #Get 'main_window' widget from Glade XNL tree
 
-        self.wnd.show_all()
+        #TODO: add goocanvas creation
+
+        self.wnd.show_all() #Show main_window and all containing widgets
         
-        self.screen = self.widgets.get_widget('screen')
-        self.command_area = self.widgets.get_widget('commands')
-        self.commandline = self.widgets.get_widget('commandline')
+        self.command_area = self.widgets.get_widget('commands') #Get widget representing stack for entered commands
+        self.commandline = self.widgets.get_widget('commandline') #Get widget representing input line dor new command
 
-        self.new_command = Signal()
+        self.new_command = Signal() #Initialize new_command signal
         
-        self.__drawer = TurtleDrawerGTK(self.screen) 
+        self.__drawer = TurtleDrawerGTK(self.screen) #Initialize drawer
 
+        #Connect signals in main with handlers in drawer and this class
         signals['drawline'].connect(self.__drawer.draw_line)
         signals['fill'].connect(self.__drawer.fill)
         signals['bg'].connect(self.__drawer.paint_background)
