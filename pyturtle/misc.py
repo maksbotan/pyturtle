@@ -1,5 +1,5 @@
 
-class ParseErrorException:
+class ParseErrorException(Exception):
     """Class ParseErrorException
     """
     # Attributes:

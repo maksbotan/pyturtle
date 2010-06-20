@@ -6,6 +6,7 @@ This file defines classes that are core of Logo interpreter
 from misc import ParseErrorException
 import threading
 from notify.signal import Signal
+from math import sin, cos
 
 class Main:
 
@@ -44,7 +45,7 @@ class Main:
         try:
             cmd = self.__parser.parse_command(command)
         except ParseErrorException as e:
-            self.new_parsefailed(e.command,e.type)
+            self.new_parsefailed(e.command, e.type)
             return
         self.new_parsesuccess()
 
@@ -77,14 +78,14 @@ class Turtle:
     __pen_state = __pen_states['up']
 
     # Operations
-    def __init__(self,signals):
+    def __init__(self, signals):
         self.signals = signals
     
     def exec_command(self, command):
         return None # should raise NotImplementedError()
     
     def __convert_color(self, color):
-        return __colors[color]
+        return self.__colors[color]
     
     def __fw(self, steps):
         new_pos = \
@@ -121,11 +122,7 @@ class Turtle:
 class TurtleParser:
 
     def __init__(self):
-        """function __init__
-        
-        returns 
-        """
-        return None # should raise NotImplementedError()
+        pass
     
     def parse_command(self, cmd):
         raise ParseErrorException(cmd,'Not implemented yet')
