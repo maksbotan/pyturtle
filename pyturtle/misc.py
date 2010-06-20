@@ -17,3 +17,6 @@ class ParseErrorException(Exception):
         """
         self.command = command
         self.type = type
+
+    def __str__(self):
+        return 'Error parsing command "%s": "%s"' % (self.command, self.type)
