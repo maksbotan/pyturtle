@@ -5,8 +5,13 @@ This file defines classes that are core of Logo interpreter
 
 from misc import ParseErrorException
 import threading
+import Queue
 from notify.signal import Signal
 from math import sin, cos
+from pyturtle.parser import ParserThread
+
+import sys
+sys.path.insert(1, '/home/maks/pyturtle')
 
 class Main:
 
@@ -30,25 +35,29 @@ class Main:
             'drawturtle': self.new_drawturtle_task,
         }
 
+        ParserThread.init_parser()
+
         self.__turtle = Turtle(self.signals)
-        self.__parser = TurtleParser()
 
         wndmod = __import__('pyturtle.MainWindow'+gui,fromlist=['MainWindow'+gui])
         self.wnd = wndmod.MainWindow(self.signals)
 
         self.wnd.new_command.connect(self.dispatch_command)
 
-        self.gui_thread = threading.Thread(target=self.wnd.run)
-        self.gui_thread.start()
+        self.wnd.run()
 
-    def dispatch_command(self,command):
+    def dispatch_command(self, command):
         try:
-            cmd = self.__parser.parse_command(command)
+            cmd = self.parse_command(command)
         except ParseErrorException as e:
             self.new_parsefailed(e.command, e.type)
             return
         self.new_parsesuccess()
 
+    def parse_command(self, command):
+        response = []
+        ParserThread({}, command, response).start()
+        raise ParseErrorException(command, 'Not implemented yet')
 
 class Turtle:
     """Class Turtle
@@ -118,11 +127,4 @@ class Turtle:
     def __goto(self, place):
         self.__position = place
         self.signals['drawturtle'](self.__position, self.__angle)
-    
-class TurtleParser:
 
-    def __init__(self):
-        pass
-    
-    def parse_command(self, cmd):
-        raise ParseErrorException(cmd,'Not implemented yet')

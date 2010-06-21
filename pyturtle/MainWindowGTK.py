@@ -17,7 +17,7 @@ class MainWindow:
     """
     
     
-    def __init__(self,signals):
+    def __init__(self, signals):
         
         """Constructor for MainWindow class
 
@@ -37,6 +37,7 @@ class MainWindow:
         self.wnd = self.widgets.get_widget('main_window') #Get 'main_window' widget from Glade XNL tree
 
         #TODO: add goocanvas creation
+        self.screen = None
 
         self.wnd.show_all() #Show main_window and all containing widgets
         
