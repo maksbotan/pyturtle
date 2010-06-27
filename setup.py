@@ -9,7 +9,7 @@ setup (
   name = 'Pyturtle',
   version = '0.0.1',
   description='Cross-toolkit Logo interpreter in Python',
-  py_modules=['pyturtle'],
+  scripts=['pyturtle.py'],
   packages=['pyturtle'],
   requires=['gtk', 'glib', 'gobject', 'goocanvas', 'notify'],
   url='http://github.com/maksbotan/pyturtle/',
