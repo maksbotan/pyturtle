@@ -1,7 +1,5 @@
-import threading
 from ply import lex, yacc
 from pyturtle.misc import Event
-from notify.signal import Signal
 
 class parser:
 

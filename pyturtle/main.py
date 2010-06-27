@@ -3,7 +3,7 @@ main.py: Main, Turtle and TurtleParser classes
 This file defines classes that are core of Logo interpreter
 """
 
-from misc import ParseErrorException, Event
+from misc import Event
 import threading
 import Queue
 from notify.signal import Signal
