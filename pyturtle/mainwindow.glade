@@ -3,7 +3,6 @@
   <!-- interface-requires gtk+ 2.16 -->
   <!-- interface-naming-policy project-wide -->
   <widget class="GtkWindow" id="main_window">
-    <signal name="destroy_event" handler="gtk_main_quit"/>
     <child>
       <widget class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
@@ -155,6 +154,7 @@
             <property name="editable">False</property>
           </widget>
           <packing>
+            <property name="pack_type">end</property>
             <property name="position">2</property>
           </packing>
         </child>
@@ -166,7 +166,10 @@
             <signal name="key_press_event" handler="on_commandline_key_press_event"/>
           </widget>
           <packing>
-            <property name="position">3</property>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
           </packing>
         </child>
       </widget>

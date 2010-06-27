@@ -1,83 +1,86 @@
 import threading
+from ply import lex, yacc
+from pyturtle.misc import Event
+from notify.signal import Signal
 
-class ParserThread(threading.Thread):
-    """
-    Thread class for parsing commands parallel with GTK main loop execution
-    """
+class parser:
 
-    def __init__(self, vars, command, response):
-        """
-        Constructor
-        
-        Arguments:
-        yacc -- ply.yacc module ready for parsing
-        vars -- dict of variables previously defined by user
-        """
-        
-        threading.Thread.__init__(self)
-
+    def __init__(self, vars, q, callback):
         self.vars = vars
-        self.cmd = command
-        self.resp = response
+        self.q = q
+        self.callback = callback
 
-    def run(self):
-        print 'parsing...'
-        self.yacc.parse(self.cmd)
-        print 'parsed'
-
-    from ply import lex, yacc
-    from pyturtle.misc import ParseErrorException
+        self.build()
 
     tokens = (
-        'NUMBER',
-        'QUOT',
-        'WORD'
+            'NUMBER',
+            'QUOT',
+            'WORD'
         )
 
-    t_NUMBER = r'\d+'
     t_QUOT = r'"'
     t_WORD = r'[a-zA-z][a-zA-Z0-9]*'
     t_ignore = ' \t'
 
-    def t_error(t):
-        raise ParseErrorException(t.value, 'Unexpected symbol')
+    def t_NUMBER(self, t):
+        r'\d+'
+        t.value = int(t.value)
+        return t
 
-    def p_func_call(t):
+    def t_error(self, t):
+        self.response.append(['Unexpected symbol', t])
+
+    def p_func_call(self, p):
         'func_call : func_name args'
-        self.resp.append([t[1], t[2]])
-        print "Calling function '%s' with args '%s'" % (t[1], t[2])
+        print "parser.p_func_call: Calling '%s' with args '%s'" % (p[1], p[2])
+        self.q.put_nowait(
+            Event(
+                self.callback, ([p[1], p[2]], )
+                )
+            )
+        
 
-    def p_func_name(t):
+    def p_func_name(self, p):
         'func_name : WORD'
     
-        t[0] = t[1]
+        p[0] = p[1]
 
-    def p_args_signle(t):
+    def p_args_signle(self, p):
         'args : arg'
-        print 'args_single: ', t[1]
-        t[0] = t[1]
+        p[0] = p[1]
 
-    def p_args_multi(t):
+    def p_args_multi(self, p):
         'args : args arg'
-        print 'args_multi: ', t[1], ' ', t[2]
-        if isinstance(t[1], list):
-            t[1].append(t[2])
-            t[0] = t[1]
+        if isinstance(p[1], list):
+            p[1].append(p[2])
+            p[0] = p[1]
         else:
-            t[0] = [t[1],t[2]]
+            p[0] = [p[1],p[2]]
 
-    def p_arg_word(t):
+    def p_arg_word(self,p):
         'arg : WORD'
-        t[0] = t[1]
+        p[0] = p[1]
 
-    def p_arg_num(t):
+    def p_arg_num(self, p):
         'arg : NUMBER'
-        t[0] = t[1]
+        p[0] = p[1]
 
-    def p_arg_qouted(t):
+    def p_arg_quoted(self, p):
         'arg : QUOT WORD'
-        t[0] = t[1]
+        p[0] = p[2]
 
-    @classmethod
-    def init_parser(cls):
-        cls.yacc = yacc.yacc()
+    def p_error(self, p):
+        print 'Error occured!'
+        self.q.put_nowait(
+            Event(
+                self.callback, (['error', 'Not implemented yet', self.cmd], )
+                )
+            )
+
+    def build(self):
+        self.lexer = lex.lex(module=self)
+        self.parser = yacc.yacc(module=self)
+
+    def parse(self, cmd):
+        self.cmd = cmd
+        self.parser.parse(cmd, lexer=self.lexer)

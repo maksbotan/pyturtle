@@ -1,3 +1,4 @@
+import goocanvas
 
 class TurtleDrawerGTK:
     """Class TurtleDrawerGTK
@@ -12,18 +13,25 @@ class TurtleDrawerGTK:
         
         returns 
         """
+
+        self.canvas = screen
+        self.root = screen.get_root_item()
+                
         return None # should raise NotImplementedError()
     
     def draw_line(self, start, end, color = [255,255,255]):
-        """function draw_line
-        
-        start: tuple
-        end: tuple
-        Color: RGB list
-        
-        returns 
-        """
-        return None # should raise NotImplementedError()
+        import threading
+        print 'TurtleDrawerGTK.draw_line in thread "%s" from %s to %s' % (threading.current_thread().name, start, end)
+       
+        start = self.__convert_position(start)
+        end = self.__convert_position(end)
+
+        goocanvas.polyline_new_line(
+            self.root,
+            *start+end
+        )
+
+        return False # should raise NotImplementedError()
     
     def fill(self, color):
         """function fill
@@ -53,12 +61,17 @@ class TurtleDrawerGTK:
         return None # should raise NotImplementedError()
     
     def __convert_position(self, position):
-        """function convert_position
-        
-        position: tuple of coordinates
-        
-        returns tuple of coordinates
-        """
-        return None # should raise NotImplementedError()
-    
+        canvas_scale = (640, 380)
 
+        position = tuple(
+            [ canvas_scale[i] - (position[i] + canvas_scale[i]/2) for i in range(2) ]
+        )
+
+        real_scale = (
+            self.canvas.allocation.width,
+            self.canvas.allocation.height
+        )
+
+        return tuple(
+            [ position[i] * real_scale[i]/canvas_scale[i] for i in range(2) ]
+        )
