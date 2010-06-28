@@ -35,7 +35,7 @@ class MainWindow:
         gtk.gdk.threads_init()
 
         self.widgets = gtk.glade.XML(
-            'pyturtle/mainwindow.glade'
+            '/usr/share/pyturtle/mainwindow.glade'
             ) #Load widgets from Glade-3 file
         #Dictionary of signals defined in Glade file
         signals_dict = {
