@@ -78,6 +78,8 @@ class MainWindow:
         #Initialize drawer
 
         #Connect signals in main with handlers in drawer and this class
+        signals['queue_task'].connect(
+            self.queue_task)
         signals['drawline'].connect(
             self.__drawer.draw_line)
         signals['fill'].connect(
@@ -128,10 +130,5 @@ class MainWindow:
             return True
         return False
 
-    def recieve_task(self):
-        if not self.main_to_gui_q.empty():
-            import threading
-            print 'MainWindowGTK.recieve_task in thread "%s"' % threading.current_thread().name
-            event = self.main_to_gui_q.get()
-            event()
-        return True
+    def queue_task(self, task, args):
+        glib.idle_add(task, *args)

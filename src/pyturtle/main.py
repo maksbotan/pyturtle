@@ -6,12 +6,11 @@ This file defines classes that are core of Logo interpreter
 from misc import Event
 import threading
 import Queue
+import sys
 from notify.signal import Signal
 from math import sin, cos
 from pyturtle.parser import parser
 
-import sys
-sys.path.insert(1, '/home/maks/pyturtle')
 
 class Main:
 
@@ -27,6 +26,7 @@ class Main:
         self.queue_task = Signal()
 
         self.signals = {
+            'queue_task': self.queue_task,
             'drawline': self.new_drawline_task,
             'fill': self.new_fill_task,
             'bg': self.new_bg_task,
@@ -148,11 +148,9 @@ class Turtle:
             (self.__position[0] + steps * sin(self.__angle),
             self.__position[1] + steps * cos(self.__angle))
 
-        self.q.put_nowait(
-            Event(
-                self.signals['drawline'],
-                (self.__position, new_pos)
-            )
+        self.signals['queue_task'](
+            self.signals['drawline'],
+            (self.__position, new_pos)
         )
 
         self.__position = new_pos
