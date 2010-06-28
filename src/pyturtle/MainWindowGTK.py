@@ -94,8 +94,6 @@ class MainWindow:
         self.gui_to_main_q =  gui_to_main_queue
         self.main_to_gui_q = main_to_gui_queue
 
-        glib.idle_add(self.recieve_task)
-
     def reset(self):
         """function reset
         
