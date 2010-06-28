@@ -11,7 +11,7 @@ setup (
   description='Cross-toolkit Logo interpreter in Python',
   scripts=['pyturtle.py'],
   packages=['pyturtle'],
-  requires=['gtk', 'glib', 'gobject', 'goocanvas', 'notify', 'gtk.glade'],
+  requires=['gtk', 'glib', 'gobject', 'goocanvas', 'notify', 'gtk.glade', 'ply'],
   url='http://github.com/maksbotan/pyturtle/',
   author='maksbotan',
   author_email='kolmax94@gmail.com',
