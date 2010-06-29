@@ -128,6 +128,8 @@ class Turtle:
 
     __pen_state = __pen_states['up']
 
+    __scale = (640, 380)
+
     # Operations
     def __init__(self, signals, gui_queue):
         self.signals = signals
@@ -147,10 +149,20 @@ class Turtle:
     def __convert_color(self, color):
         return self.__colors[color]
     
+    def __offscreen_paint(self, new_pos):
+        checking_list = [[new_pos[i], self.__scale[i]] for i in range(2)]
+
+        def check_if_offscreen(coord, scale):
+            if coord
+
     def __fw(self, steps):
         new_pos = \
             (self.__position[0] + steps * sin(self.__angle),
             self.__position[1] + steps * cos(self.__angle))
+
+        if new_pos[0] > self.__scale[0]/2:
+            3   
+            new_pos[0]/(self.__scale[0]/2)
 
         self.signals['queue_task'](
             self.signals['drawline'],
