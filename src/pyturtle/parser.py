@@ -29,6 +29,15 @@ class parser:
         self.response.append(['Unexpected symbol', t])
 
     def p_func_call(self, p):
+        'func_call : func_name'
+        print 'parser.p_func_call: Calling "%s"' % p[1]
+        self.q.put_nowait(
+            Event(
+                self.callback, ([p[1]], )
+                )
+            )
+
+    def p_func_call_args(self, p):
         'func_call : func_name args'
         print "parser.p_func_call: Calling '%s' with args '%s'" % (p[1], p[2])
         self.q.put_nowait(
