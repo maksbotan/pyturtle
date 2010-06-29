@@ -33,7 +33,7 @@ class parser:
         print 'parser.p_func_call: Calling "%s"' % p[1]
         self.q.put_nowait(
             Event(
-                self.callback, ([p[1], None], )
+                self.callback, ([p[1]], )
                 )
             )
 

@@ -74,7 +74,6 @@ class Main:
 
     def dispatch_command(self, command):
         print 'Main.dispatch_command in thread "%s"' % threading.current_thread().name
-        print command
         if command[0] == 'error':
             self.new_parsefailed(
                 command[2],
@@ -83,8 +82,12 @@ class Main:
         else:
             result = self.__turtle.exec_command(command)
             if result is not None:
+                if len(command) == 1:
+                    format = '%s'
+                else:
+                    format = '%s %s'
                 self.new_parsefailed(
-                    '%s %s' % tuple(command),
+                    format % tuple(command),
                     result
                 )
             else:
