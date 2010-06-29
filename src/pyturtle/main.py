@@ -150,19 +150,22 @@ class Turtle:
         return self.__colors[color]
     
     def __offscreen_paint(self, new_pos):
-        checking_list = [[new_pos[i], self.__scale[i]] for i in range(2)]
+        checking_list = [[new_pos[i], self.__scale[i]/2] for i in range(2)]
 
         def check_if_offscreen(coord, scale):
-            if coord
+            if coord > scale:
+                return scale
+            else:
+                return coord
+
+        return [check_if_offscreen(coord, scale) for coord, scale in checking_list]
 
     def __fw(self, steps):
         new_pos = \
             (self.__position[0] + steps * sin(self.__angle),
             self.__position[1] + steps * cos(self.__angle))
 
-        if new_pos[0] > self.__scale[0]/2:
-            3   
-            new_pos[0]/(self.__scale[0]/2)
+        print self.__offscreen_paint(new_pos)
 
         self.signals['queue_task'](
             self.signals['drawline'],
