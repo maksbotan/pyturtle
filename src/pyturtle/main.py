@@ -8,7 +8,7 @@ import threading
 import Queue
 import sys
 from notify.signal import Signal
-from math import sin, cos
+from math import sin, cos, radians
 from pyturtle.parser import parser
 
 
@@ -183,8 +183,8 @@ class Turtle:
 
     def __fw(self, steps):
         new_pos = \
-            (self.__position[0] + steps * sin(self.__angle),
-            self.__position[1] + steps * cos(self.__angle))
+            (self.__position[0] + steps * sin(radians(self.__angle)),
+            self.__position[1] + steps * cos(radians(self.__angle)))
 
         print self.__offscreen_paint(new_pos)
 

@@ -63,9 +63,8 @@ class TurtleDrawerGTK:
     def __convert_position(self, position):
         canvas_scale = (640, 380)
 
-        position = tuple(
-            [ canvas_scale[i] - (position[i] + canvas_scale[i]/2) for i in range(2) ]
-        )
+        position = [position[i] + canvas_scale[i]/2 if i == 0 else canvas_scale[i] - (position[i] + canvas_scale[i]/2) for i in range(2)]
+
 
         real_scale = (
             self.canvas.allocation.width,
@@ -73,5 +72,5 @@ class TurtleDrawerGTK:
         )
 
         return tuple(
-            [ position[i] * real_scale[i]/canvas_scale[i] for i in range(2) ]
+            [position[i] * real_scale[i]/canvas_scale[i] for i in range(2)]
         )
