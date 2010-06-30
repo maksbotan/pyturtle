@@ -203,11 +203,11 @@ class Turtle:
         self.__position = new_pos
     
     def __rt(self, angle):
-        self.angle += angle
+        self.__angle += angle
         self.signals['drawturtle'](self.__position, self.__angle)
    
     def __lt(self, angle):
-        self.angle -= angle
+        self.__angle -= angle
         self.signals['drawturtle'](self.__position, self.__angle)
 
     def __pen_up(self):
