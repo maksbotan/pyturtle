@@ -104,14 +104,14 @@ class MainWindow:
     def iteration(self):
         gtk.main()
     
-    def parse_failed(self, command, typ):
-        print 'parsefailed!'
+    def parse_failed(self, reason):
         dialog = gtk.MessageDialog(
             type=gtk.MESSAGE_ERROR,
-            message_format='Error parsing command "%s"' % command
+            message_format='Error parsing command "%s"' % self.cmd
         )
-        dialog.format_secondary_text('Reason: "%s"' % typ)
+        dialog.format_secondary_text('Reason: "%s"' % reason)
         dialog.show()
+        self.cmd = ''
 
     def parse_success(self):
         iter = self.command_area.get_buffer().get_end_iter()
@@ -125,6 +125,7 @@ class MainWindow:
                     self.new_command, (widget.get_text(), )
                     )
                 )
+            self.cmd = widget.get_text()
             return True
         return False
 

@@ -76,23 +76,12 @@ class Main:
         print 'Main.dispatch_command in thread "%s"' % threading.current_thread().name
         if command[0] == 'error':
             self.new_parsefailed(
-                command[2],
                 command[1]
             )
         else:
             result = self.__turtle.exec_command(command)
             if result is not None:
-                try:
-                    command.remove([])
-                except ValueError:
-                    pass
-                if len(command) == 1:
-                    format = '%s' % command[0]
-                else:
-                    format = '%s %s' % tuple(command)
-                print command
                 self.new_parsefailed(
-                    format,
                     result
                 )
             else:
@@ -177,17 +166,15 @@ class Turtle:
             if func in fun['aliases']:
                 if len(args) != len(fun['arguments']) or args == []:
                     raise ExecutionError(
-                        '%s %s' % (func, args),
                         '"%s" function takes %d arguments, got %d' % (func, len(fun['arguments']), len(args))
                     )
                 for i, arg in enumerate(fun['arguments']):
                     if type(args[i]) != arg:
                         raise ExecutionError(
-                            '%s %s' % (func, args),
                             'Invalid argument "%s", expected "%s"' % (args[i], arg)
                         )
                 return [fun['executable'], args]
-        raise ExecutionError('%s %s' % (func, args), 'Unknown function: "%s"' % func)
+        raise ExecutionError('Unknown function: "%s"' % func)
 
     def __fw(self, steps):
         new_pos = \
