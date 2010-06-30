@@ -82,13 +82,17 @@ class Main:
         else:
             result = self.__turtle.exec_command(command)
             if result is not None:
-                command.remove(None)
+                try:
+                    command.remove([])
+                except ValueError:
+                    pass
                 if len(command) == 1:
-                    format = '%s'
+                    format = '%s' % command[0]
                 else:
-                    format = '%s %s'
+                    format = '%s %s' % tuple(command)
+                print command
                 self.new_parsefailed(
-                    format % tuple(command[2]),
+                    format,
                     result
                 )
             else:
@@ -146,13 +150,12 @@ class Turtle:
 
     def exec_command(self, command):
         print 'Turtle.exec_command: executing command "%s" in thread "%s"' % (command, threading.current_thread().name)
-        function = self.__check_prototype(*command)
-        #try:
-        #    self.__functions[command[0]](command[1])
-        #except KeyError:
-        #    return 'Not Implemented Yet'
-        #except ExecutionError:
-        #    return 'Internal Error!'
+        try:
+            function = self.__check_prototype(*command)
+        except ExecutionError as e:
+            return e.reason
+
+        function[0](*function[1])
     
     def __convert_color(self, color):
         return self.__colors[color]
@@ -172,10 +175,10 @@ class Turtle:
         for fun in self.__functions:
             print args 
             if func in fun['aliases']:
-                if len(args) != len(fun['arguments']):
+                if len(args) != len(fun['arguments']) or args == []:
                     raise ExecutionError(
                         '%s %s' % (func, args),
-                        '"%s" function takes %d arguments, got %d' % (len(fun['arguments']), len(args))
+                        '"%s" function takes %d arguments, got %d' % (func, len(fun['arguments']), len(args))
                     )
                 for i, arg in enumerate(fun['arguments']):
                     if type(args[i]) != arg:
