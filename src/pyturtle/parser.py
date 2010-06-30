@@ -33,13 +33,15 @@ class parser:
         print 'parser.p_func_call: Calling "%s"' % p[1]
         self.q.put_nowait(
             Event(
-                self.callback, ([p[1]], )
+                self.callback, ([p[1], [None] ], )
                 )
             )
 
     def p_func_call_args(self, p):
         'func_call : func_name args'
         print "parser.p_func_call: Calling '%s' with args '%s'" % (p[1], p[2])
+        if not isinstance(p[2], list):
+            p[2] = [p[2]]
         self.q.put_nowait(
             Event(
                 self.callback, ([p[1], p[2]], )

@@ -82,12 +82,13 @@ class Main:
         else:
             result = self.__turtle.exec_command(command)
             if result is not None:
+                command.remove(None)
                 if len(command) == 1:
                     format = '%s'
                 else:
                     format = '%s %s'
                 self.new_parsefailed(
-                    format % tuple(command),
+                    format % tuple(command[2]),
                     result
                 )
             else:
@@ -137,21 +138,21 @@ class Turtle:
         
         self.__functions = [
             { 
-                'aliases' = ['fw', 'forward'],
-                'executable' = self.__fw,
-                'arguments' = [int]
+                'aliases': ['fw', 'forward'],
+                'executable': self.__fw,
+                'arguments': [int, ]
             },
         ]
 
     def exec_command(self, command):
         print 'Turtle.exec_command: executing command "%s" in thread "%s"' % (command, threading.current_thread().name)
         function = self.__check_prototype(*command)
-        try:
-            self.__functions[command[0]](command[1])
-        except KeyError:
-            return 'Not Implemented Yet'
-        except ExecutionError:
-            return 'Internal Error!'
+        #try:
+        #    self.__functions[command[0]](command[1])
+        #except KeyError:
+        #    return 'Not Implemented Yet'
+        #except ExecutionError:
+        #    return 'Internal Error!'
     
     def __convert_color(self, color):
         return self.__colors[color]
@@ -167,21 +168,23 @@ class Turtle:
 
         return [check_if_offscreen(coord, scale) for coord, scale in checking_list]
 
-    def __check_prototype(self, args, func):
-        for func in self.__functions:
-            if func in func['aliases']:
-                if len(args) != len(func['arguments']):
+    def __check_prototype(self, func, args):
+        for fun in self.__functions:
+            print args 
+            if func in fun['aliases']:
+                if len(args) != len(fun['arguments']):
                     raise ExecutionError(
                         '%s %s' % (func, args),
-                        '"%s" function takes %d arguments, got %d' % (len(func['arguments'], len(args))
+                        '"%s" function takes %d arguments, got %d' % (len(fun['arguments']), len(args))
                     )
-                for i, arg in enumerate(func['arguments']):
+                for i, arg in enumerate(fun['arguments']):
                     if type(args[i]) != arg:
                         raise ExecutionError(
                             '%s %s' % (func, args),
                             'Invalid argument "%s", expected "%s"' % (args[i], arg)
                         )
-                return [func['executable'], args]
+                return [fun['executable'], args]
+        raise ExecutionError('%s %s' % (func, args), 'Unknown function: "%s"' % func)
 
     def __fw(self, steps):
         new_pos = \
