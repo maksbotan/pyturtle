@@ -135,12 +135,17 @@ class Turtle:
         self.signals = signals
         self.q = gui_queue
         
-        self.__functions = {
-            'fw': self.__fw,
-        }
+        self.__functions = [
+            { 
+                'aliases' = ['fw', 'forward'],
+                'executable' = self.__fw,
+                'arguments' = [int]
+            },
+        ]
 
     def exec_command(self, command):
         print 'Turtle.exec_command: executing command "%s" in thread "%s"' % (command, threading.current_thread().name)
+        function = self.__check_prototype(*command)
         try:
             self.__functions[command[0]](command[1])
         except KeyError:
@@ -161,6 +166,22 @@ class Turtle:
                 return coord
 
         return [check_if_offscreen(coord, scale) for coord, scale in checking_list]
+
+    def __check_prototype(self, args, func):
+        for func in self.__functions:
+            if func in func['aliases']:
+                if len(args) != len(func['arguments']):
+                    raise ExecutionError(
+                        '%s %s' % (func, args),
+                        '"%s" function takes %d arguments, got %d' % (len(func['arguments'], len(args))
+                    )
+                for i, arg in enumerate(func['arguments']):
+                    if type(args[i]) != arg:
+                        raise ExecutionError(
+                            '%s %s' % (func, args),
+                            'Invalid argument "%s", expected "%s"' % (args[i], arg)
+                        )
+                return [func['executable'], args]
 
     def __fw(self, steps):
         new_pos = \
