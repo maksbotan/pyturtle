@@ -135,6 +135,11 @@ class Turtle:
                 'executable': self.__fw,
                 'arguments': [int, ]
             },
+            {
+                'aliases': ['rt'],
+                'executable': self.__rt,
+                'arguments': [int]
+            }
         ]
 
     def exec_command(self, command):
