@@ -1,5 +1,5 @@
 
-class ParseErrorException(Exception):
+class ParseError(BaseException):
     """Class ParseErrorException
     """
     # Attributes:
@@ -20,6 +20,15 @@ class ParseErrorException(Exception):
 
     def __str__(self):
         return 'Error parsing command "%s": "%s"' % (self.command, self.type)
+
+class ExecutionError(BaseException):
+    
+    def __init__(self, command, reason):
+        self.command = command
+        self.reason = reason
+
+    def __str__(self):
+        return 'Error executing command "%s": "%s"' % (self.command, self.reason)
 
 class Event:
     def __init__(self, func, args):

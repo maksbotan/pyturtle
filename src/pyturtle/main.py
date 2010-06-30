@@ -3,7 +3,7 @@ main.py: Main, Turtle and TurtleParser classes
 This file defines classes that are core of Logo interpreter
 """
 
-from misc import Event
+from misc import Event, ExecutionError
 import threading
 import Queue
 import sys
@@ -143,8 +143,10 @@ class Turtle:
         print 'Turtle.exec_command: executing command "%s" in thread "%s"' % (command, threading.current_thread().name)
         try:
             self.__functions[command[0]](command[1])
-        except:
+        except KeyError:
             return 'Not Implemented Yet'
+        except ExecutionError:
+            return 'Internal Error!'
     
     def __convert_color(self, color):
         return self.__colors[color]
