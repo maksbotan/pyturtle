@@ -144,7 +144,7 @@ class Turtle:
 
     def prototype_checker(arguments):
         def wrapper(f):
-            def decorator(*args):
+            def decorator(self, *args):
                 if len(args) != len(arguments):
                     raise ExecutionError(
                         'Called function takes %d arguments, but only %d given' % (
@@ -153,28 +153,28 @@ class Turtle:
                         )
                     )
                 for index, arg in enumerate(args):
-                    if type(args) != arguments[index]:
+                    if type(arg) != arguments[index]:
                         raise ExecutionError(
                             'Invalid argument "%s" of type "%s": expected "%s"' % (
                                 arg,
                                 type(arg),
-                                arguments(index)
+                                arguments[index]
                             )
                         )
-                return f(*args)
+                return f(self, *args)
             return decorator
-         return wrapper
+        return wrapper
 
 
     def exec_command(self, command):
         print 'Turtle.exec_command: executing command "%s" in thread "%s"' % (command, threading.current_thread().name)
         try:
-            function = self.__check_prototype(*command)
+            function = self.__get_executable(command[0])
+            function(*command[1])
         except ExecutionError as e:
             return e.reason
-
-        function[0](*function[1])
-    
+        
+            
     def __convert_color(self, color):
         return self.__colors[color]
     
@@ -189,20 +189,10 @@ class Turtle:
 
         return [check_if_offscreen(coord, scale) for coord, scale in checking_list]
 
-    def __get_executable(self, func, args):
+    def __get_executable(self, func):
         for fun in self.__functions:
-            print args 
             if func in fun['aliases']:
-                if len(args) != len(fun['arguments']) or args == []:
-                    raise ExecutionError(
-                        '"%s" function takes %d arguments, got %d' % (func, len(fun['arguments']), len(args))
-                    )
-                for i, arg in enumerate(fun['arguments']):
-                    if type(args[i]) != arg:
-                        raise ExecutionError(
-                            'Invalid argument "%s", expected "%s"' % (args[i], arg)
-                        )
-                return [fun['executable'], args]
+                return fun['executable']
         raise ExecutionError('Unknown function: "%s"' % func)
 
     @prototype_checker([int])
@@ -227,6 +217,7 @@ class Turtle:
         self.signals['drawline'](self.__position, new_pos)
         self.__position = new_pos
     
+    @prototype_checker([int])
     def __rt(self, angle):
         self.__angle += angle
         self.signals['drawturtle'](self.__position, self.__angle)
