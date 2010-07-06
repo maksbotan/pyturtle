@@ -133,14 +133,38 @@ class Turtle:
             { 
                 'aliases': ['fw', 'forward'],
                 'executable': self.__fw,
-                'arguments': [int, ]
+        #        'arguments': [int, ]
             },
             {
                 'aliases': ['rt'],
                 'executable': self.__rt,
-                'arguments': [int]
+        #        'arguments': [int]
             }
         ]
+
+    def prototype_checker(arguments):
+        def wrapper(f):
+            def decorator(*args):
+                if len(args) != len(arguments):
+                    raise ExecutionError(
+                        'Called function takes %d arguments, but only %d given' % (
+                            len(arguments),
+                            len(args),
+                        )
+                    )
+                for index, arg in enumerate(args):
+                    if type(args) != arguments[index]:
+                        raise ExecutionError(
+                            'Invalid argument "%s" of type "%s": expected "%s"' % (
+                                arg,
+                                type(arg),
+                                arguments(index)
+                            )
+                        )
+                return f(*args)
+            return decorator
+         return wrapper
+
 
     def exec_command(self, command):
         print 'Turtle.exec_command: executing command "%s" in thread "%s"' % (command, threading.current_thread().name)
@@ -165,7 +189,7 @@ class Turtle:
 
         return [check_if_offscreen(coord, scale) for coord, scale in checking_list]
 
-    def __check_prototype(self, func, args):
+    def __get_executable(self, func, args):
         for fun in self.__functions:
             print args 
             if func in fun['aliases']:
@@ -181,6 +205,7 @@ class Turtle:
                 return [fun['executable'], args]
         raise ExecutionError('Unknown function: "%s"' % func)
 
+    @prototype_checker([int])
     def __fw(self, steps):
         new_pos = \
             (self.__position[0] + steps * sin(radians(self.__angle)),
