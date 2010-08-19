@@ -8,7 +8,7 @@ import threading
 import Queue
 import sys
 from notify.signal import Signal
-from math import sin, cos, radians
+from math import sin, cos, tan, radians
 from pyturtle.parser import parser
 
 
@@ -202,11 +202,17 @@ class Turtle:
             self.__position[1] + steps * cos(radians(self.__angle)))
 
         offscreen = self.__offscreen_paint(new_pos)
-        
-        print offscreen
 
         if offscreen != [False, False]:
-            deltas = [self.__scale[i] - self.__position[i] for i in range(2)]
+            if offscreen == [False, True]:
+                deltas = [0, 0]
+                deltas[1] = self.__scale[1]/2 - self.__position[1]
+                deltas[0] = deltas[1] * tan(radians(self.__angle))
+
+                self.signals['queue_task'](
+                    self.signals['drawline'],
+                    (self.__position, tuple([self.__position[i] + deltas[i] for i in range(2)]))
+                )
         else:
             self.signals['queue_task'](
                self.signals['drawline'],
