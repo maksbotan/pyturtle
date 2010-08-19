@@ -201,12 +201,17 @@ class Turtle:
             (self.__position[0] + steps * sin(radians(self.__angle)),
             self.__position[1] + steps * cos(radians(self.__angle)))
 
-        print self.__offscreen_paint(new_pos)
+        offscreen = self.__offscreen_paint(new_pos)
+        
+        print offscreen
 
-        self.signals['queue_task'](
-            self.signals['drawline'],
-            (self.__position, new_pos)
-        )
+        if offscreen != [False, False]:
+            deltas = [self.__scale[i] - self.__position[i] for i in range(2)]
+        else:
+            self.signals['queue_task'](
+               self.signals['drawline'],
+                (self.__position, new_pos)
+            )
 
         self.__position = new_pos
     
