@@ -183,9 +183,9 @@ class Turtle:
 
         def check_if_offscreen(coord, scale):
             if coord > scale:
-                return scale
+                return True
             else:
-                return coord
+                return False
 
         return [check_if_offscreen(coord, scale) for coord, scale in checking_list]
 
