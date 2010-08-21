@@ -206,6 +206,8 @@ class Turtle:
             self.__position[1] + steps * cos(radians(self.__angle)))
 
         offscreen = self.__offscreen_paint(new_pos)
+        print new_pos
+        print offscreen
 
         if offscreen != [False, False]:
             if offscreen == [False, True]:
@@ -217,11 +219,24 @@ class Turtle:
                     self.signals['drawline'],
                     (self.__position, tuple([self.__position[i] + deltas[i] for i in range(2)]))
                 )
-                print new_pos[1] 
                 self.signals['queue_task'](
                     self.signals['drawline'],
                     ((self.__position[0] + deltas[0], -self.__scale[1]/2), (new_pos[0], new_pos[1] - self.__scale[1]))
                 )
+            elif offscreen == [True, False]:
+                deltas = [0, 0]
+                deltas[0] = self.__scale[0]/2 - self.__position[0]
+                deltas[1] = deltas[0] / tan(radians(self.__angle)) 
+
+                self.signals['queue_task'](
+                    self.signals['drawline'],
+                    (self.__position, tuple([self.__position[i] + deltas[i] for i in range(2)]))
+                )
+                self.signals['queue_task'](
+                    self.signals['drawline'],
+                    ((-self.__scale[0]/2, self.__position[1] + deltas[1]), (new_pos[0] - self.__scale[0], new_pos[1]))
+                )
+
         else:
             self.signals['queue_task'](
                self.signals['drawline'],
