@@ -213,6 +213,11 @@ class Turtle:
                     self.signals['drawline'],
                     (self.__position, tuple([self.__position[i] + deltas[i] for i in range(2)]))
                 )
+                print new_pos[1] 
+                self.signals['queue_task'](
+                    self.signals['drawline'],
+                    ((self.__position[0] + deltas[0], -self.__scale[1]/2), (new_pos[0], new_pos[1] - self.__scale[1]))
+                )
         else:
             self.signals['queue_task'](
                self.signals['drawline'],
