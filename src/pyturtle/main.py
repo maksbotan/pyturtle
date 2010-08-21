@@ -139,7 +139,11 @@ class Turtle:
                 'aliases': ['rt'],
                 'executable': self.__rt,
         #        'arguments': [int]
-            }
+            },
+            {
+                'aliases': ['lt'],
+                'executable': self.__lt,
+            },
         ]
 
     def prototype_checker(arguments):
@@ -238,6 +242,7 @@ class Turtle:
         self.__angle += angle
         self.signals['drawturtle'](self.__position, self.__angle)
    
+    @prototype_checker([int])
     def __lt(self, angle):
         self.__angle -= angle
         self.signals['drawturtle'](self.__position, self.__angle)
