@@ -112,7 +112,7 @@ class Turtle:
         '9':[210,180,140],
         #'10': forest?! That weird! Lets find it out later.
         }  # (dict of RGB lists) 
-    __position = (0,0)  # (tuple of coordinates) 
+    __position = [0,0]  # (tuple of coordinates) 
     __angle = 0
 
     __pen_states = {
@@ -134,6 +134,10 @@ class Turtle:
                 'aliases': ['fw', 'forward'],
                 'executable': self.__fw,
         #        'arguments': [int, ]
+            },
+            {
+                'aliases': ['bw', 'back'],
+                'executable': self.__bw,
             },
             {
                 'aliases': ['rt'],
@@ -199,67 +203,44 @@ class Turtle:
                 return fun['executable']
         raise ExecutionError('Unknown function: "%s"' % func)
 
+    def __move_helper(self, steps, incrementation):
+        new_pos = self.__position[:]
+        while steps > 0:
+            new_pos[0] += sin(self.__angle)*incrementation
+            new_pos[1] += cos(self.__angle)*incrementation
+
+            check_matrix = [-1, 1]
+
+            offscreens = [[new_pos[i]*j > self.__scale[i]/2 for i in xrange(2)] for j in [1,-1]]
+
+            for i in xrange(2):
+                for j in xrange(2):
+                    if offscreens[i][j] == True:
+                        self.signals['drawline'](self.__position, new_pos)
+                        self.__position = new_pos[:]
+                        self.__position[j] = new_pos[j] = check_matrix[i]*self.__scale[j]/2
+
+            steps -= 1
+
+        self.signals['drawline'](self.__position, new_pos)
+        self.__position = new_pos[:]
+
     @prototype_checker([int])
     def __fw(self, steps):
-        new_pos = \
-            (self.__position[0] + steps * sin(radians(self.__angle)),
-            self.__position[1] + steps * cos(radians(self.__angle)))
+        self.__move_helper(steps, 1)
 
-        offscreen = self.__offscreen_paint(new_pos)
-        print new_pos
-        print offscreen
-
-        if offscreen != [False, False]:
-            if offscreen == [False, True]:
-                deltas = [0, 0]
-                deltas[1] = self.__scale[1]/2 - self.__position[1]
-                deltas[0] = deltas[1] * tan(radians(self.__angle))
-
-                self.signals['queue_task'](
-                    self.signals['drawline'],
-                    (self.__position, tuple([self.__position[i] + deltas[i] for i in range(2)]))
-                )
-                self.signals['queue_task'](
-                    self.signals['drawline'],
-                    ((self.__position[0] + deltas[0], -self.__scale[1]/2), (new_pos[0], new_pos[1] - self.__scale[1]))
-                )
-            elif offscreen == [True, False]:
-                deltas = [0, 0]
-                deltas[0] = self.__scale[0]/2 - self.__position[0]
-                deltas[1] = deltas[0] / tan(radians(self.__angle)) 
-
-                self.signals['queue_task'](
-                    self.signals['drawline'],
-                    (self.__position, tuple([self.__position[i] + deltas[i] for i in range(2)]))
-                )
-                self.signals['queue_task'](
-                    self.signals['drawline'],
-                    ((-self.__scale[0]/2, self.__position[1] + deltas[1]), (new_pos[0] - self.__scale[0], new_pos[1]))
-                )
-
-        else:
-            self.signals['queue_task'](
-               self.signals['drawline'],
-                (self.__position, new_pos)
-            )
-
-        self.__position = new_pos
-    
+    @prototype_checker([int])
     def __bw(self, steps):
-        new_pos = \
-            (self.__position[0] - steps * sin(self.__angle),
-            self.__position[1] - steps * cos(self.__angle))
-        self.signals['drawline'](self.__position, new_pos)
-        self.__position = new_pos
-    
+        self.__move_helper(steps, -1)
+
     @prototype_checker([int])
     def __rt(self, angle):
-        self.__angle += angle
+        self.__angle += radians(angle)
         self.signals['drawturtle'](self.__position, self.__angle)
    
     @prototype_checker([int])
     def __lt(self, angle):
-        self.__angle -= angle
+        self.__angle -= radians(angle)
         self.signals['drawturtle'](self.__position, self.__angle)
 
     def __pen_up(self):
